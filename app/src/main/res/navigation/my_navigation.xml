@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/my_navigation"
+    app:startDestination="@id/listFragment">
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.example.yemeksiparisuygulamasiv2.view.ListFragment"
+        android:label="ListFragment" >
+        <action
+            android:id="@+id/action_listFragment_to_detayFragment"
+            app:destination="@id/detayFragment" >
+            <argument
+                android:name="yemekId"
+                android:defaultValue="0" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/detayFragment"
+        android:name="com.example.yemeksiparisuygulamasiv2.view.DetayFragment"
+        android:label="DetayFragment" >
+        <action
+            android:id="@+id/action_detayFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+        <argument
+            android:name="yemekId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+</navigation>
