@@ -21,5 +21,4 @@ data class Yemek (
     @Expose
     @SerializedName("yemek_fiyat")
     var yemek_fiyat:Int){
-
 }

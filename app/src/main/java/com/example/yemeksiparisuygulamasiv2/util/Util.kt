@@ -1,7 +1,12 @@
 package com.example.yemeksiparisuygulamasiv2.util
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+import android.provider.ContactsContract
+import android.util.Log
 import android.widget.ImageView
+import androidx.databinding.BindingAdapter
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.GlideContext
@@ -28,4 +33,17 @@ fun placeholderProgressBar(context: Context): CircularProgressDrawable{
         centerRadius = 40f
         start()
     }
+}
+@BindingAdapter("android:downloadurl")
+fun downloadImage(view: ImageView, url:String?){
+    val urls = "http://kasimadalan.pe.hu/yemekler/resimler/${url}"
+    Log.e("url", urls)
+    view.downloadFromUrl(urls, placeholderProgressBar(view.context))
+}
+
+fun checkNetwork(context: Context): Boolean {
+    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+    val isConnected: Boolean = activeNetwork?.isConnectedOrConnecting == true
+    return isConnected
 }

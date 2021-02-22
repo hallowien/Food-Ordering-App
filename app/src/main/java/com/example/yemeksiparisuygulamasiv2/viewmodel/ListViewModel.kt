@@ -10,6 +10,7 @@ import com.example.yemeksiparisuygulamasiv2.model.YemekCevap
 import com.example.yemeksiparisuygulamasiv2.service.YemekApiService
 import com.example.yemeksiparisuygulamasiv2.service.YemekDatabase
 import com.example.yemeksiparisuygulamasiv2.util.CustomSharedPreferences
+import com.example.yemeksiparisuygulamasiv2.util.checkNetwork
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
@@ -33,12 +34,24 @@ class ListViewModel(application: Application) : BaseViewModel(application){
 
 
     fun refreshData(){
+
+
+        if(checkNetwork(getApplication())) {
+            Log.e("connection", "internet")
+            getDataFromApi()
+        }else{
+            getDataFromRoom()
+        }
+
+        /*
         val updateTime = customPreferences.getTime()
         if(updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime){
             getDataFromRoom()
         }else{
             getDataFromApi()
         }
+
+         */
     }
 
     private fun getDataFromRoom(){

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="yemeksepet"
+            type="com.example.yemeksiparisuygulamasiv2.model.SepetYemek" />
+        <variable
+            name="listenersepet"
+            type="com.example.yemeksiparisuygulamasiv2.adapter.ItemClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{listenersepet::onItemClicked}">
+
+        <TextView
+            android:id="@+id/sepetidtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{String.valueOf(yemeksepet.yemek_id)}"
+            android:visibility="gone">
+
+        </TextView>
+
+
+        <ImageView
+            android:id="@+id/sepet_urun_ekle"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="44dp"
+            android:layout_marginRight="44dp"
+            android:background="@drawable/buttonbackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/add" />
+
+        <ImageView
+            android:id="@+id/sepet_urun_sil"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="9dp"
+            android:layout_marginEnd="44dp"
+            android:layout_marginRight="44dp"
+            android:background="@drawable/buttonbackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textSepetSiparisAdet"
+            app:srcCompat="@drawable/remove" />
+
+        <TextView
+            android:id="@+id/textSepetYemekAdi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:text="@{yemeksepet.yemek_adi}"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageViewSepet"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textSepetYemekFiyat"
+            android:layout_width="48dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:text="@{Integer.toString(yemeksepet.yemek_fiyat)}"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textSepetYemekAdi"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageViewSepet"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:downloadurl="@{yemeksepet.yemek_resim_adi}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            app:srcCompat="@drawable/ic_launcher_foreground" />
+
+        <TextView
+            android:id="@+id/textSepetSiparisAdet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="27dp"
+            android:layout_marginRight="27dp"
+            android:text="@{Integer.toString(yemeksepet.yemek_siparis_adet)}"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sepet_urun_ekle" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

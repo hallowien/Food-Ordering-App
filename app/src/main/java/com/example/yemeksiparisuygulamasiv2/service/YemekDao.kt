@@ -4,6 +4,7 @@ package com.example.yemeksiparisuygulamasiv2.service
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.yemeksiparisuygulamasiv2.model.SepetYemek
 import com.example.yemeksiparisuygulamasiv2.model.Yemek
 
 
@@ -21,4 +22,6 @@ interface YemekDao {
 
     @Query("DELETE FROM yemekler")
     suspend fun deleteAllYemekler()
+
+
 }

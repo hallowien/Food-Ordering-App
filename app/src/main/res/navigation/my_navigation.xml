@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/my_navigation"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_navigation"
     app:startDestination="@id/listFragment">
 
     <fragment
@@ -14,6 +16,9 @@
                 android:name="yemekId"
                 android:defaultValue="0" />
         </action>
+        <action
+            android:id="@+id/action_listFragment_to_sepetFragment"
+            app:destination="@id/sepetFragment" />
     </fragment>
     <fragment
         android:id="@+id/detayFragment"
@@ -26,5 +31,20 @@
             android:name="yemekId"
             app:argType="integer"
             android:defaultValue="0" />
+        <action
+            android:id="@+id/action_detayFragment_to_sepetFragment"
+            app:destination="@id/sepetFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sepetFragment"
+        android:name="com.example.yemeksiparisuygulamasiv2.view.SepetFragment"
+        android:label="fragment_sepet"
+        tools:layout="@layout/fragment_sepet" >
+        <action
+            android:id="@+id/action_sepetFragment_to_detayFragment"
+            app:destination="@id/detayFragment" />
+        <action
+            android:id="@+id/action_sepetFragment_to_listFragment"
+            app:destination="@id/listFragment" />
     </fragment>
 </navigation>
