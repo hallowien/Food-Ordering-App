@@ -89,6 +89,9 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener{
 
 
     override fun onQueryTextChange(newText: String?): Boolean {
+        if(newText != null) {
+            searchApiData(newText)
+        }
         return true
     }
 
@@ -111,7 +114,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener{
          */
         swipeRefreshLayout.setOnRefreshListener {
             YemekRV.visibility = View.GONE
-            yemekError.visibility = View.GONE
+            //yemekError.visibility = View.GONE
             yemekLoading.visibility = View.VISIBLE
             viewModel.refreshData()
             swipeRefreshLayout.isRefreshing = false
@@ -125,14 +128,14 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener{
                 Log.e("cevap", yemekler.yemekler[3].yemek_adi)
                 YemekRV.visibility = View.VISIBLE
                 yemekLoading.visibility = View.GONE
-                yemekError.visibility = View.GONE
+                //yemekError.visibility = View.GONE
             }
 
             yemekAdapter = YemekAdapter(yemekler.yemekler)
             YemekRV.adapter = yemekAdapter
         })
 
-        viewModel.yemekerror.observe(viewLifecycleOwner, Observer {error ->
+        /*viewModel.yemekerror.observe(viewLifecycleOwner, Observer {error ->
             error?.let {
                 if(it) {
                     yemekError.visibility = View.VISIBLE
@@ -141,12 +144,14 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener{
                 }
             }
         })
+
+         */
         viewModel.yemekloading.observe(viewLifecycleOwner, Observer {loading ->
             loading?.let {
                 if(it) {
                     YemekRV.visibility = View.VISIBLE
                     yemekLoading.visibility = View.VISIBLE
-                    yemekError.visibility = View.GONE
+                    //yemekError.visibility = View.GONE
                 }else{
                     yemekLoading.visibility = View.GONE
                 }

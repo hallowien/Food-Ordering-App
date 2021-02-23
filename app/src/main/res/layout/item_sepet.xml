@@ -12,7 +12,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white">
 
         <TextView
             android:id="@+id/sepetidtext"
@@ -24,57 +25,34 @@
         </TextView>
 
 
-        <ImageView
-            android:id="@+id/sepet_urun_ekle"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="44dp"
-            android:layout_marginRight="44dp"
-            android:background="@drawable/buttonbackground"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/add" />
-
-        <ImageView
-            android:id="@+id/sepet_urun_sil"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="9dp"
-            android:layout_marginEnd="44dp"
-            android:layout_marginRight="44dp"
-            android:background="@drawable/buttonbackground"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textSepetSiparisAdet"
-            app:srcCompat="@drawable/remove" />
-
         <TextView
             android:id="@+id/textSepetYemekAdi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
+            android:layout_marginTop="25dp"
+            android:fontFamily="sans-serif-medium"
             android:text="@{yemeksepet.yemek_adi}"
             android:textColor="@color/black"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageViewSepet"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textSepetYemekFiyat"
-            android:layout_width="48dp"
-            android:layout_height="52dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:text="@{Integer.toString(yemeksepet.yemek_fiyat)}"
+            android:layout_marginTop="5dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@{Integer.toString(yemeksepet.yemek_fiyat)+ `₺`}"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textSepetYemekAdi"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/imageViewSepet"
+            app:layout_constraintTop_toBottomOf="@+id/textSepetYemekAdi" />
 
         <ImageView
             android:id="@+id/imageViewSepet"
@@ -93,14 +71,31 @@
             android:id="@+id/textSepetSiparisAdet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="27dp"
-            android:layout_marginRight="27dp"
-            android:text="@{Integer.toString(yemeksepet.yemek_siparis_adet)}"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginRight="50dp"
+            android:text="@{Integer.toString(yemeksepet.yemek_siparis_adet) + ` adet`}"
             android:textColor="@color/black"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/sepet_urun_ekle" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewtoplam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="TextView"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textSepetSiparisAdet" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

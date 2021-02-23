@@ -25,28 +25,25 @@ class ListViewModel(application: Application) : BaseViewModel(application){
 
 
     val yemekler = MutableLiveData<YemekCevap>()
-    val yemekerror = MutableLiveData<Boolean>()
+    //val yemekerror = MutableLiveData<Boolean>()
     val yemekloading = MutableLiveData<Boolean>()
 
 
     fun refreshData() {
 
         if (checkNetwork(getApplication())) {
-            Log.e("connection", "internet")
-            getDataFromApi()
+
+            val updateTime = customPreferences.getTime()
+
+            if(updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime){
+                getDataFromRoom()
+            }else {
+                Log.e("connection", "internet")
+                getDataFromApi()
+            }
         } else {
             getDataFromRoom()
         }
-
-        /*
-        val updateTime = customPreferences.getTime()
-        if(updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime){
-            getDataFromRoom()
-        }else{
-            getDataFromApi()
-        }
-
-         */
     }
 
 
@@ -54,7 +51,7 @@ class ListViewModel(application: Application) : BaseViewModel(application){
         launch {
             val yemeklist = YemekDatabase(getApplication()).yemekdao().getAllYemekler()
             showYemeklerRoom(yemeklist)
-            Toast.makeText(getApplication(), "from room", Toast.LENGTH_SHORT).show()
+            Toast.makeText(getApplication(), "Getting data with RoomDB", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -62,7 +59,7 @@ class ListViewModel(application: Application) : BaseViewModel(application){
     private fun showYemeklerRoom(cevap: List<Yemek>) {
         val yemekcevap = YemekCevap(cevap, 1)
         yemekler.value = yemekcevap
-        yemekerror.value = false
+        //yemekerror.value = false
         yemekloading.value = false
     }
 
@@ -81,7 +78,7 @@ class ListViewModel(application: Application) : BaseViewModel(application){
 
     private fun getDataFromApi() {
         yemekloading.value = true
-        Toast.makeText(getApplication(), "from api", Toast.LENGTH_SHORT).show()
+        Toast.makeText(getApplication(), "Getting data from API", Toast.LENGTH_SHORT).show()
         val ydi = YemekApiService.getYemekInterface()
         ydi.getYemekler().enqueue(object : Callback<YemekCevap> {
             override fun onFailure(call: Call<YemekCevap>, t: Throwable) {
@@ -108,7 +105,7 @@ class ListViewModel(application: Application) : BaseViewModel(application){
 
     fun showYemekler(cevap: YemekCevap) {
         yemekler.value = cevap
-        yemekerror.value = false
+        //yemekerror.value = false
         yemekloading.value = false
     }
 

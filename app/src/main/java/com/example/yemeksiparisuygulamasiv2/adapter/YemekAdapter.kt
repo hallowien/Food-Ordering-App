@@ -27,7 +27,6 @@ class YemekAdapter (var yemekList: List<Yemek>): RecyclerView.Adapter<YemekAdapt
 
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): YemekViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = DataBindingUtil.inflate<ItemYemekBinding>(inflater, R.layout.item_yemek, parent, false)
@@ -43,51 +42,15 @@ class YemekAdapter (var yemekList: List<Yemek>): RecyclerView.Adapter<YemekAdapt
         }
 
         holder.view.root.sepet_urun_ekle_list.setOnClickListener {
-            yemekEkle(yemekList[position].yemek_id, yemekList[position].yemek_adi, yemekList[position].yemek_resim_adi, yemekList[position].yemek_fiyat, 1)
-        }
-
-        Log.e("cevap", yemekList[position].yemek_adi)
-        //holder.view.textViewYemekAdi.text = yemekList[position].yemek_adi
-        //holder.view.textViewYemekFiyat.text = yemekList[position].yemek_fiyat.toString()
-
-        /*holder.view.setOnClickListener{
             val action = ListFragmentDirections.actionListFragmentToDetayFragment(yemekList[position].yemek_id)
-
             Navigation.findNavController(it).navigate(action)
         }
 
-        val url =  "http://kasimadalan.pe.hu/yemekler/resimler/${yemekList[position].yemek_resim_adi}"
-        holder.view.imageView2.downloadFromUrl(url, placeholderProgressBar(holder))
-
-         */
+        Log.e("cevap", yemekList[position].yemek_adi)
 
         }
-    private fun yemekSil(yemek_id: Int){
 
-        val ydi = YemekApiService.getYemekInterface()
-        ydi.sepettenSil(yemek_id).enqueue(object : Callback<CRUDCevap> {
-            override fun onFailure(call: Call<CRUDCevap>, t: Throwable) {
-            }
-            override fun onResponse(call: Call<CRUDCevap>, response: Response<CRUDCevap>) {
-                Log.e("başarılı silme", response.body()?.success.toString())
-                Log.e("mesaj sil", response.body()?.message.toString())
-            }
-        })
 
-    }
-
-    private fun yemekEkle(yemek_id: Int, yemek_adi: String, yemek_resim_adi: String, yemek_fiyat: Int, yemek_siparis_adet: Int){
-
-        val ydi = YemekApiService.getYemekInterface()
-        ydi.sepeteEkle(yemek_id, yemek_adi.toString(),  yemek_resim_adi.toString(), yemek_fiyat, yemek_siparis_adet).enqueue(object : Callback<CRUDCevap> {
-            override fun onFailure(call: Call<CRUDCevap>, t: Throwable) {
-            }
-            override fun onResponse(call: Call<CRUDCevap>, response: Response<CRUDCevap>) {
-                Log.e("başarı", response.body()?.success.toString())
-                Log.e("mesaj", response.body()?.message.toString())
-            }
-        })
-    }
 
     fun updateYemekList(newYemekList: List<Yemek>){
         yemekList = emptyList()

@@ -24,7 +24,6 @@ fun ImageView.downloadFromUrl(url: String?, progressDrawable: CircularProgressDr
             .load(url)
             .into(this)
 
-
 }
 
 fun placeholderProgressBar(context: Context): CircularProgressDrawable{
@@ -34,10 +33,10 @@ fun placeholderProgressBar(context: Context): CircularProgressDrawable{
         start()
     }
 }
+
 @BindingAdapter("android:downloadurl")
 fun downloadImage(view: ImageView, url:String?){
     val urls = "http://kasimadalan.pe.hu/yemekler/resimler/${url}"
-    Log.e("url", urls)
     view.downloadFromUrl(urls, placeholderProgressBar(view.context))
 }
 

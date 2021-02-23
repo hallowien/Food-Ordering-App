@@ -6,7 +6,9 @@ import android.view.Menu
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.yemeksiparisuygulamasiv2.R
 import com.example.yemeksiparisuygulamasiv2.service.YemekDatabase
@@ -21,9 +23,14 @@ class MainActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        navigationController = Navigation.findNavController(this, R.id.fragment)
+        NavigationUI.setupActionBarWithNavController(this, navigationController)
 
-        setupActionBarWithNavController(findNavController(R.id.fragment))
+        //setupActionBarWithNavController(findNavController(R.id.fragment))
+    }
 
+    override fun onSupportNavigateUp(): Boolean {
+        return NavigationUI.navigateUp(navigationController, null)
     }
 
 

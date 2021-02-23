@@ -1,12 +1,9 @@
 package com.example.yemeksiparisuygulamasiv2.adapter
 
-import android.app.Application
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
@@ -14,19 +11,15 @@ import com.example.yemeksiparisuygulamasiv2.R
 import com.example.yemeksiparisuygulamasiv2.databinding.ItemSepetBinding
 import com.example.yemeksiparisuygulamasiv2.model.CRUDCevap
 import com.example.yemeksiparisuygulamasiv2.model.SepetYemek
-import com.example.yemeksiparisuygulamasiv2.service.SepetDatabase
 import com.example.yemeksiparisuygulamasiv2.service.YemekApiService
-import com.example.yemeksiparisuygulamasiv2.service.YemekDatabase
-import com.example.yemeksiparisuygulamasiv2.util.checkNetwork
+import com.example.yemeksiparisuygulamasiv2.view.SepetFragment
 import com.example.yemeksiparisuygulamasiv2.viewmodel.SepetViewModel
 import kotlinx.android.synthetic.main.item_sepet.view.*
 import com.example.yemeksiparisuygulamasiv2.view.SepetFragmentDirections
-import com.example.yemeksiparisuygulamasiv2.viewmodel.DetayViewModel
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.coroutines.coroutineContext
+import kotlinx.android.synthetic.main.item_sepet.view.textSepetYemekFiyat as textSepetYemekFiyat1
 
 
 class SepetAdapter(var List: List<SepetYemek>): RecyclerView.Adapter<SepetAdapter.SepetViewHolder>(){
@@ -45,18 +38,19 @@ class SepetAdapter(var List: List<SepetYemek>): RecyclerView.Adapter<SepetAdapte
     override fun onBindViewHolder(holder: SepetViewHolder, position: Int) {
 
         holder.view.yemeksepet = List[position]
-        holder.view.root.sepet_urun_ekle.setOnClickListener {
-            yemekEkle(List[position].yemek_id, List[position].yemek_adi, List[position].yemek_resim_adi, List[position].yemek_fiyat, 1)
-        }
-        holder.view.root.sepet_urun_sil.setOnClickListener {
-            yemekSil(List[position].yemek_id)
-        }
-        holder.view.textSepetSiparisAdet.text = "${List[position].yemek_siparis_adet.toString()} adet"
+        val toplam = List[position].yemek_fiyat * List[position].yemek_siparis_adet
+        holder.view.textViewtoplam.text = "${toplam.toString()}₺"
+        //holder.view.textSepetSiparisAdet.text = "${List[position].yemek_siparis_adet.toString()} adet"
+        //val fiyat = holder.view.root.textSepetYemekFiyat1.text.toString().toInt()
+        //val adet = holder.view.root.textSepetSiparisAdet.text.toString().toInt()
+        //val toplam = (adet * fiyat).toString()
+        //holder.view.textViewtoplam.text = toplam
 
         holder.view.root.setOnClickListener {
             val action = SepetFragmentDirections.actionSepetFragmentToDetayFragment(List[position].yemek_id)
             Navigation.findNavController(it).navigate(action)
         }
+
     }
 
     private fun yemekSil(yemek_id: Int){
@@ -70,27 +64,27 @@ class SepetAdapter(var List: List<SepetYemek>): RecyclerView.Adapter<SepetAdapte
                 Log.e("mesaj sil", response.body()?.message.toString())
             }
         })
+        notifyDataSetChanged()
     }
 
     private fun yemekEkle(yemek_id: Int, yemek_adi: String, yemek_resim_adi: String, yemek_fiyat: Int, yemek_siparis_adet: Int){
 
+       // viewModel = ViewModelProviders.of(this).get(SepetViewModel::class.java)
+
         val yeniYemek = SepetYemek(yemek_id, yemek_adi, yemek_resim_adi, yemek_fiyat, yemek_siparis_adet)
-        if(viewModel.isConnected()){
-            val ydi = YemekApiService.getYemekInterface()
-            ydi.sepeteEkle(yemek_id, yemek_adi.toString(),  yemek_resim_adi.toString(), yemek_fiyat, yemek_siparis_adet).enqueue(object : Callback<CRUDCevap> {
-                override fun onFailure(call: Call<CRUDCevap>, t: Throwable) {
-                }
-                override fun onResponse(call: Call<CRUDCevap>, response: Response<CRUDCevap>) {
-                    Log.e("başarı", response.body()?.success.toString())
-                    Log.e("mesaj", response.body()?.message.toString())
-                }
-            })
-        }else{
-            viewModel.RoomSepeteEkle(yeniYemek)
-        }
+
+        val ydi = YemekApiService.getYemekInterface()
+        ydi.sepeteEkle(yemek_id, yemek_adi.toString(),  yemek_resim_adi.toString(), yemek_fiyat, yemek_siparis_adet).enqueue(object : Callback<CRUDCevap> {
+            override fun onFailure(call: Call<CRUDCevap>, t: Throwable) {
+            }
+            override fun onResponse(call: Call<CRUDCevap>, response: Response<CRUDCevap>) {
+                Log.e("başarı", response.body()?.success.toString())
+                Log.e("mesaj", response.body()?.message.toString())
+            }
+        })
     }
 
-    private fun updateYemekList(newYemekList: List<SepetYemek>){
+    fun updateYemekList(newYemekList: List<SepetYemek>){
         List = emptyList()
         this.List = newYemekList
         notifyDataSetChanged()
@@ -99,20 +93,5 @@ class SepetAdapter(var List: List<SepetYemek>): RecyclerView.Adapter<SepetAdapte
         return List.size
     }
 
-   /* override fun onItemClicked(v: View) {
-        val id = v.sepetidtext.text.toString().toInt()
-        val action = SepetFragmentDirections.actionSepetFragmentToDetayFragment(id)
-        Navigation.findNavController(v).navigate(action)
-    }
-
-    override fun onEkleClicked(v: View) {
-        yemekEkle(v.yemekidtext.text.toString().toInt(), v.textSepetYemekAdi.text.toString(),v.imageViewSepet.toString(), v.textSepetYemekFiyat.text.toString().toInt(), 1)
-    }
-
-    override fun onSilClicked(v: View) {
-        yemekSil(v.yemekidtext.text.toString().toInt())
-    }
-
-    */
 
 }

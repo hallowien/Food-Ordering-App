@@ -21,10 +21,11 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-
-class SepetViewModel (application: Application) : BaseViewModel(application){
-
+@HiltViewModel
+class SepetViewModel @Inject constructor (application: Application) : BaseViewModel(application){
 
     private var customPreferences = CustomSharedPreferences(getApplication())
     private var refreshTime = 0.1 * 60 * 1000 * 1000 * 1000L
@@ -33,21 +34,30 @@ class SepetViewModel (application: Application) : BaseViewModel(application){
     val sepet_yemekler = MutableLiveData<SepetCevap>()
     val sepeterror = MutableLiveData<Boolean>()
     val sepetloading = MutableLiveData<Boolean>()
+    var flag = 0
 
-    fun refreshData(){
+    fun refreshData() {
 
-       if(checkNetwork(getApplication())) {
-           Log.e("connection sepet", "yey")
-           val updateTime = customPreferences.getTime()
-           if(updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime){
-               implementRoom()
-           }
-           getDataFromApi()
-       }else{
-           getDataFromRoom()
-       }
-        //getDataFromRoom()
-        /*
+        Log.e("connection sepet", "yey")
+       // val updateTime = customPreferences.getTime()
+        //if (updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime) {
+        //    implementRoom()
+
+            if (checkNetwork(getApplication())) {
+                if(flag==1){
+
+                    Log.e("flag", "1")
+                    implementRoom()
+                    flag = 0
+                }
+                Log.e("flag", "0")
+                getDataFromApi()
+            } else {
+                getDataFromRoom()
+                flag = 1
+            }
+            //getDataFromRoom()
+            /*
         val updateTime = customPreferences.getTime()
         if(updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime){
             getDataFromRoom()
@@ -68,8 +78,11 @@ class SepetViewModel (application: Application) : BaseViewModel(application){
         }
     }
 
+
+
     private fun showYemeklerRoom(cevap: List<SepetYemek>){
         val yemekcevap = SepetCevap(cevap, 1)
+
         sepet_yemekler.value = yemekcevap
         sepeterror.value = false
         sepetloading.value = false
@@ -86,6 +99,7 @@ class SepetViewModel (application: Application) : BaseViewModel(application){
 
     private fun getDataFromApi() {
         sepetloading.value = true
+        sepeterror.value = false
         Toast.makeText(getApplication(), "from api", Toast.LENGTH_SHORT).show()
         val ydi = YemekApiService.getYemekInterface()
         ydi.getSepettekiler().enqueue(object : Callback<SepetCevap> {
@@ -100,6 +114,8 @@ class SepetViewModel (application: Application) : BaseViewModel(application){
                 }else{
                     launch {
                         Log.e("sepet bos", "bos")
+                        sepetloading.value = false
+                        sepeterror.value = true
                     }
                 }
             }
@@ -108,6 +124,7 @@ class SepetViewModel (application: Application) : BaseViewModel(application){
 
 
     private fun showYemekler(cevap: SepetCevap){
+
         sepet_yemekler.value = cevap
         sepeterror.value = false
         sepetloading.value = false
@@ -126,6 +143,7 @@ class SepetViewModel (application: Application) : BaseViewModel(application){
             showYemekler(cevap)
         }
     }
+
     private fun implementRoom() {
         launch {
             val dao = SepetDatabase(getApplication()).sepetdao()

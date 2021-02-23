@@ -1,30 +1,23 @@
 package com.example.yemeksiparisuygulamasiv2.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.widget.ImageView
-import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.get
 import androidx.navigation.Navigation
 import com.example.yemeksiparisuygulamasiv2.R
 import com.example.yemeksiparisuygulamasiv2.databinding.FragmentDetayBinding
 import com.example.yemeksiparisuygulamasiv2.model.CRUDCevap
 import com.example.yemeksiparisuygulamasiv2.model.SepetYemek
-import com.example.yemeksiparisuygulamasiv2.model.YemekCevap
 import com.example.yemeksiparisuygulamasiv2.service.YemekApiService
-import com.example.yemeksiparisuygulamasiv2.util.downloadFromUrl
-import com.example.yemeksiparisuygulamasiv2.util.placeholderProgressBar
 import com.example.yemeksiparisuygulamasiv2.viewmodel.DetayViewModel
 import kotlinx.android.synthetic.main.fragment_detay.*
-import com.example.yemeksiparisuygulamasiv2.view.DetayFragmentArgs
 import com.example.yemeksiparisuygulamasiv2.viewmodel.SepetViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.item_yemek.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,9 +28,6 @@ class DetayFragment : Fragment() {
     private lateinit var sepetviewModel : SepetViewModel
     private var yemekId = 0
     private lateinit var dataBinding : FragmentDetayBinding
-
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +59,6 @@ class DetayFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -83,13 +72,18 @@ class DetayFragment : Fragment() {
         textYemekSiparisAdet.text = siparisadet.toString()
 
         detay_urun_ekle.setOnClickListener {
+            this.buttonSepeteEkle.text = "SEPETE EKLE"
             siparisadet += 1
             textYemekSiparisAdet.text = siparisadet.toString()
+
         }
         detay_urun_sil.setOnClickListener {
             if(siparisadet>=1){
                 siparisadet -= 1
                 textYemekSiparisAdet.text = siparisadet.toString()
+                if(siparisadet == 0){
+                    this.buttonSepeteEkle.text = "SEPETTEN ÇIKAR"
+                }
             }
         }
 
@@ -102,7 +96,6 @@ class DetayFragment : Fragment() {
                 sepettencikar()
             }
         }
-
         observeLiveData()
     }
 
@@ -174,17 +167,6 @@ class DetayFragment : Fragment() {
             detay?.let {
 
                 dataBinding.yemekdetay = detay
-                /*
-                textDetayYemekAdi.text = detay.yemek_adi
-                textDetayYemekFiyat.text = detay.yemek_fiyat.toString()
-
-                val url =  "http://kasimadalan.pe.hu/yemekler/resimler/${detay.yemek_resim_adi}"
-                context?.let{
-                    imageViewDetay.downloadFromUrl(url, placeholderProgressBar(it))
-                }
-
-                 */
-
             }
         })
     }
