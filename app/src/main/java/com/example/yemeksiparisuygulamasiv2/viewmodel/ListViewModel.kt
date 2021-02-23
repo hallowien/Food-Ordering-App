@@ -4,17 +4,13 @@ import android.app.Application
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.yemeksiparisuygulamasiv2.model.Yemek
 import com.example.yemeksiparisuygulamasiv2.model.YemekCevap
 import com.example.yemeksiparisuygulamasiv2.service.YemekApiService
 import com.example.yemeksiparisuygulamasiv2.service.YemekDatabase
 import com.example.yemeksiparisuygulamasiv2.util.CustomSharedPreferences
 import com.example.yemeksiparisuygulamasiv2.util.checkNetwork
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.observers.DisposableSingleObserver
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -33,13 +29,12 @@ class ListViewModel(application: Application) : BaseViewModel(application){
     val yemekloading = MutableLiveData<Boolean>()
 
 
-    fun refreshData(){
+    fun refreshData() {
 
-
-        if(checkNetwork(getApplication())) {
+        if (checkNetwork(getApplication())) {
             Log.e("connection", "internet")
             getDataFromApi()
-        }else{
+        } else {
             getDataFromRoom()
         }
 
@@ -54,7 +49,8 @@ class ListViewModel(application: Application) : BaseViewModel(application){
          */
     }
 
-    private fun getDataFromRoom(){
+
+    private fun getDataFromRoom() {
         launch {
             val yemeklist = YemekDatabase(getApplication()).yemekdao().getAllYemekler()
             showYemeklerRoom(yemeklist)
@@ -63,14 +59,25 @@ class ListViewModel(application: Application) : BaseViewModel(application){
     }
 
 
-    private fun showYemeklerRoom(cevap: List<Yemek>){
+    private fun showYemeklerRoom(cevap: List<Yemek>) {
         val yemekcevap = YemekCevap(cevap, 1)
-        Log.e("yemek", cevap[2].yemek_adi)
         yemekler.value = yemekcevap
         yemekerror.value = false
         yemekloading.value = false
     }
 
+    fun searchApiData(searchQuery: String) {
+        val ydi = YemekApiService.getYemekInterface()
+        ydi.yemekAra(searchQuery).enqueue(object : Callback<YemekCevap> {
+            override fun onFailure(call: Call<YemekCevap>, t: Throwable) {
+            }
+            override fun onResponse(call: Call<YemekCevap>, response: Response<YemekCevap>) {
+                val yemekList = response.body()?.yemekler
+                Log.e("yemek", "yemek")
+                showYemekler(response.body()!!)
+            }
+    })
+    }
 
     private fun getDataFromApi() {
         yemekloading.value = true
@@ -79,13 +86,14 @@ class ListViewModel(application: Application) : BaseViewModel(application){
         ydi.getYemekler().enqueue(object : Callback<YemekCevap> {
             override fun onFailure(call: Call<YemekCevap>, t: Throwable) {
             }
+
             override fun onResponse(call: Call<YemekCevap>, response: Response<YemekCevap>) {
                 val cevap = response.body()!!
                 val yemekList = response.body()?.yemekler
 
                 if (yemekList != null) {
                     storeInRoom(cevap)
-                   /* yemekler.value = response.body()
+                    /* yemekler.value = response.body()
                     yemekerror.value = false
                     yemekloading.value = false
                     for (k in yemekList) {
@@ -98,7 +106,7 @@ class ListViewModel(application: Application) : BaseViewModel(application){
         })
     }
 
-    private fun showYemekler(cevap: YemekCevap){
+    fun showYemekler(cevap: YemekCevap) {
         yemekler.value = cevap
         yemekerror.value = false
         yemekloading.value = false
@@ -117,25 +125,4 @@ class ListViewModel(application: Application) : BaseViewModel(application){
     }
 
 
-        /*
-        disposable.add(yemekApiService.getData()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith(object : DisposableSingleObserver<YemekCevap>(){
-
-                override fun onSuccess(t: YemekCevap) {
-                    yemekler.value = t
-                    yemekerror.value = false
-                    yemekloading.value = false
-                }
-                override fun onError(e: Throwable) {
-                    yemekerror.value = true
-                    yemekloading.value = false
-                    e.printStackTrace()
-                }
-
-            })
-        )
-*/
 }
-

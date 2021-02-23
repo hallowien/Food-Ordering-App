@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.yemeksiparisuygulamasiv2.model.CRUDCevap
 import com.example.yemeksiparisuygulamasiv2.model.SepetCevap
 import com.example.yemeksiparisuygulamasiv2.model.SepetYemek
@@ -15,6 +16,7 @@ import com.example.yemeksiparisuygulamasiv2.service.SepetDatabase
 import com.example.yemeksiparisuygulamasiv2.service.YemekApiService
 import com.example.yemeksiparisuygulamasiv2.util.CustomSharedPreferences
 import com.example.yemeksiparisuygulamasiv2.util.checkNetwork
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -34,15 +36,16 @@ class SepetViewModel (application: Application) : BaseViewModel(application){
 
     fun refreshData(){
 
-
        if(checkNetwork(getApplication())) {
-           Log.e("connection", "yey")
+           Log.e("connection sepet", "yey")
+           val updateTime = customPreferences.getTime()
+           if(updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime){
+               implementRoom()
+           }
            getDataFromApi()
        }else{
            getDataFromRoom()
        }
-
-
         //getDataFromRoom()
         /*
         val updateTime = customPreferences.getTime()
@@ -53,52 +56,50 @@ class SepetViewModel (application: Application) : BaseViewModel(application){
         }*/
     }
 
-
+    fun isConnected() :Boolean{
+        return checkNetwork(getApplication())
+    }
 
     private fun getDataFromRoom(){
         launch {
-            val yemeklist = SepetDatabase.getDatabase(getApplication()).sepetdao().getAllSepetYemekler()
+            val yemeklist = SepetDatabase(getApplication()).sepetdao().getAllSepetYemekler()
             showYemeklerRoom(yemeklist)
             Toast.makeText(getApplication(), "from room", Toast.LENGTH_SHORT).show()
         }
     }
 
-
     private fun showYemeklerRoom(cevap: List<SepetYemek>){
         val yemekcevap = SepetCevap(cevap, 1)
-        Log.e("yemek", cevap[2].yemek_adi)
         sepet_yemekler.value = yemekcevap
         sepeterror.value = false
         sepetloading.value = false
     }
 
+    fun RoomSepeteEkle(yeni: SepetYemek){
+        viewModelScope.launch(Dispatchers.IO){
+            Log.e("room detay", "sepet")
+            val dao = SepetDatabase(getApplication()).sepetdao()
+            dao.insertToSepet(yeni)
+        }
+    }
+
 
     private fun getDataFromApi() {
-        //sepetloading.value = true
+        sepetloading.value = true
         Toast.makeText(getApplication(), "from api", Toast.LENGTH_SHORT).show()
         val ydi = YemekApiService.getYemekInterface()
         ydi.getSepettekiler().enqueue(object : Callback<SepetCevap> {
             override fun onFailure(call: Call<SepetCevap>, t: Throwable) {
-                Log.e("neden", "neden")
+
             }
             override fun onResponse(call: Call<SepetCevap>, response: Response<SepetCevap>) {
                 val cevap = response.body()!!
                 val yemekList = response.body()?.sepet_yemekler
                 if (yemekList != null) {
-
                     storeInRoom(cevap)
-                    //showYemekler(cevap)
-                    /* yemekler.value = response.body()
-                     yemekerror.value = false
-                     yemekloading.value = false
-                     for (k in yemekList) {
-                         Log.e("*****", "***")
-                         Log.e("yemek ad", k.yemek_adi)
-                     }
-                     */
                 }else{
                     launch {
-                        Log.e("sepet bos", "boss")
+                        Log.e("sepet bos", "bos")
                     }
                 }
             }
@@ -117,11 +118,46 @@ class SepetViewModel (application: Application) : BaseViewModel(application){
     private fun storeInRoom(cevap: SepetCevap) {
         launch {
             val list = cevap.sepet_yemekler
-            val dao = SepetDatabase.getDatabase(getApplication()).sepetdao()
+            val dao = SepetDatabase(getApplication()).sepetdao()
             dao.deleteAllSepetYemekler()
             val listlong = dao.insertAllToSepet(*list.toTypedArray())
+            val yenilist = dao.getAllSepetYemekler()
+            val yenicevap = SepetCevap(yenilist, 1)
             showYemekler(cevap)
         }
+    }
+    private fun implementRoom() {
+        launch {
+            val dao = SepetDatabase(getApplication()).sepetdao()
+            val yenilist = dao.getAllSepetYemekler()
+            for(k in yenilist) {
+                yemekEkle(
+                    k.yemek_id,
+                    k.yemek_adi,
+                    k.yemek_resim_adi,
+                    k.yemek_fiyat,
+                    k.yemek_siparis_adet
+                )
+            }
+            dao.deleteAllSepetYemekler()
+        }
+
+    }
+
+    private fun yemekEkle(yemek_id: Int, yemek_adi: String, yemek_resim_adi: String, yemek_fiyat: Int, yemek_siparis_adet: Int){
+
+        val yeniYemek = SepetYemek(yemek_id, yemek_adi, yemek_resim_adi, yemek_fiyat, yemek_siparis_adet)
+
+            val ydi = YemekApiService.getYemekInterface()
+            ydi.sepeteEkle(yemek_id, yemek_adi.toString(),  yemek_resim_adi.toString(), yemek_fiyat, yemek_siparis_adet).enqueue(object : Callback<CRUDCevap> {
+                override fun onFailure(call: Call<CRUDCevap>, t: Throwable) {
+                }
+                override fun onResponse(call: Call<CRUDCevap>, response: Response<CRUDCevap>) {
+                    Log.e("başarılı ekleme", response.body()?.success.toString())
+                    Log.e("mesaj", response.body()?.message.toString())
+                }
+            })
+
     }
 
 

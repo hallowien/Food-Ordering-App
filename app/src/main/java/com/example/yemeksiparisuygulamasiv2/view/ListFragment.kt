@@ -1,38 +1,95 @@
 package com.example.yemeksiparisuygulamasiv2.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.*
+import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.ListFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.manager.SupportRequestManagerFragment
 import com.example.yemeksiparisuygulamasiv2.R
 import com.example.yemeksiparisuygulamasiv2.adapter.YemekAdapter
 import com.example.yemeksiparisuygulamasiv2.model.YemekCevap
+import com.example.yemeksiparisuygulamasiv2.service.YemekApiService
+import com.example.yemeksiparisuygulamasiv2.service.YemekDatabase
 import com.example.yemeksiparisuygulamasiv2.viewmodel.ListViewModel
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_list.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), SearchView.OnQueryTextListener{
 
     private lateinit var viewModel : ListViewModel
     private var yemekAdapter = YemekAdapter(arrayListOf())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_list, container, false)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+
+        val search = menu.findItem(R.id.menu_search)
+        val searchView = search.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        if(item.itemId == R.id.menu_sepet){
+            val view = fragment.view
+            val action = ListFragmentDirections.actionListFragmentToSepetFragment()
+            Navigation.findNavController(view!!).navigate(action)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
+    fun searchApiData(searchQuery: String) {
+        val ydi = YemekApiService.getYemekInterface()
+        ydi.yemekAra(searchQuery).enqueue(object : Callback<YemekCevap> {
+            override fun onFailure(call: Call<YemekCevap>, t: Throwable) {
+            }
+            override fun onResponse(call: Call<YemekCevap>, response: Response<YemekCevap>) {
+                val yemekList = response.body()?.yemekler
+                Log.e("yemek", "yemek")
+                yemekList?.let {
+                    yemekAdapter.setData(yemekList)
+                }
+            }
+        })
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        if(query != null) {
+            searchApiData(query)
+        }
+        return true
+    }
+
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,9 +124,6 @@ class ListFragment : Fragment() {
             yemekler?.let {
                 Log.e("cevap", yemekler.yemekler[3].yemek_adi)
                 YemekRV.visibility = View.VISIBLE
-
-                //YemekRV.adapter = yemekAdapter
-                //yemekAdapter.updateYemekList(yemekler.yemekler)
                 yemekLoading.visibility = View.GONE
                 yemekError.visibility = View.GONE
             }
@@ -100,5 +154,4 @@ class ListFragment : Fragment() {
         })
 
     }
-
 }

@@ -6,15 +6,11 @@
         <variable
             name="yemek"
             type="com.example.yemeksiparisuygulamasiv2.model.Yemek" />
-        <variable
-            name="listener"
-            type="com.example.yemeksiparisuygulamasiv2.adapter.ItemClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="@{listener:: onItemClicked}">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/yemekidtext"

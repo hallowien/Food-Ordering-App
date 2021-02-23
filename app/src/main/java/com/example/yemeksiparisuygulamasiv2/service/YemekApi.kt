@@ -31,4 +31,12 @@ interface YemekApi {
     @FormUrlEncoded
     fun sepettenSil(@Field("yemek_id") yemek_id: Int): Call<CRUDCevap>
 
+    @POST("yemekler/tum_yemekler_arama.php")
+    @FormUrlEncoded
+    fun yemekAra(@Field("yemek_adi") yemek_adi :String): Call<YemekCevap>
+
+
+
+
+
 }
