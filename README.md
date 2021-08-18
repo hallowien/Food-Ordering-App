@@ -9,4 +9,4 @@ There are 3 main pages, one for menu, one for detailed page for the foods and dr
 
 ## Demo
 
-![alt](App Demo.gif)
+![](AppDemo.gif)
